@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notepad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        .topbar {
+            background: #111827;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.6);
+        }
+
+        button {
+            background: #1f2933;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            margin-left: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #38bdf8;
+            color: black;
+        }
+
+        /* Text Area */
+        textarea {
+            flex: 1;
+            width: 100%;
+            background: #020617;
+            color: white;
+            border: none;
+            outline: none;
+            padding: 15px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        /* Footer */
+        .footer {
+            background: #111827;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: gray;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <button onclick="openFile()">Open</button>
+    <button onclick="saveFile()">Save</button>
+    <button onclick="clearText()">Clear</button>
+</div>
+
+<textarea id="notepad" placeholder="Start typing..."></textarea>
+
+<div class="footer" id="wordCount">Words: 0 | Characters: 0</div>
+
+<script>
+const textarea = document.getElementById("notepad");
+const counter = document.getElementById("wordCount");
+
+// Save File
+function saveFile() {
+    let text = textarea.value;
+    let blob = new Blob([text], { type: "text/plain" });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "note.txt";
+    link.click();
+}
+
+// Open File
+function openFile() {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".txt";
+    input.onchange = function(e) {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.onload = function() {
+            textarea.value = reader.result;
+            updateCount();
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Clear text
+function clearText() {
+    textarea.value = "";
+    updateCount();
+}
+
+// Word & character counter
+textarea.addEventListener("input", updateCount);
+
+function updateCount() {
+    let text = textarea.value;
+    let words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+    let chars = text.length;
+    counter.innerText = `Words: ${words} | Characters: ${chars}`;
+}
+</script>
+
+</body>
+</html>
